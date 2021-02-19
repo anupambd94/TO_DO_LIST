@@ -43,15 +43,13 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
 
 <head>
     <meta charset="utf-8">
-    <!--  This file has been downloaded from bootdey.com    @bootdey on twitter -->
-    <!--  All snippets are MIT license http://bootdey.com/license -->
-    <title>WeDevs todo list</title>
+    <title>WeDevs to-do list</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
+    <link href="../../Assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../Assets/css/pretty-checkbox.min.css" rel="stylesheet">
     <link href="../../Assets/css/all.min.css" rel="stylesheet">
-    <script src="https://use.fontawesome.com/5e7608e55e.js"></script>
+    <!-- <script src="https://use.fontawesome.com/5e7608e55e.js"></script> -->
     <link href="../../Assets/css/style.css" rel="stylesheet">
 
     <style type="text/css">
@@ -86,7 +84,8 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                             <?php if (!empty($data) && isset($data) and count($data) > 0): ?>
 
                             <?php foreach ($data as $task): ?>
-                            <div class="task_item task_item_<?=$task['id']?>">
+                            <div class="task_item task_item_<?=$task['id']?>" id="<?=$task['id']?>"
+                                data-completed="<?=$task['is_completed']?>">
                                 <div class=" innerPosition">
                                     <div class="pretty p-icon p-round">
                                         <input type="checkbox" class="checkbox"
@@ -96,14 +95,24 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                                         <div class="state">
                                             <i class="icon fas fa-check"></i>
                                             <!-- <i class="fas fa-check"></i> -->
-                                            <label title="Edit this task" style=""
-                                                <?=($task['is_completed'] != '1' && $task['status'] != '3') ? 'onclick="show_edit_option(' . $task['id'] . ')"' : '';?>
-                                                <?=($task['is_completed'] == '1' && $task['status'] == '3') ? 'style="color: #ccc;pointer-events: none;-webkit-text-decoration-line: line-through;text-decoration-line: line-through;"' : ''?>>
-                                                <span class="hidden-resizer" id="taskName_<?=$task['id']?>"
-                                                    style="display: inline-block;font-size: 26px;"><?=$task['task_name']?></span>
+                                            <label
+                                                title="<?=($task['is_completed'] == '1' && $task['status'] == '3') ? 'Not Editable' : 'Edit this task'?>"
+                                                <?=($task['is_completed'] != '1' && $task['status'] != '3') ? 'onclick="show_edit_option(' . $task['id'] . ')"' : '';?>>
+                                                <span
+                                                    class="hidden-resizer <?=($task['is_completed'] == '1' && $task['status'] == '3') ? 'completed' : ''?>"
+                                                    id="taskName_<?=$task['id']?>"><?=$task['task_name']?></span>
+
+
                                             </label>
+
                                         </div>
+                                        <div class="remove-icon">
+                                            <span class="delete someicon_<?=$task['id']?>">
+                                                <i class="fas fa-times"></i></span>
+                                        </div>
+
                                     </div>
+
 
 
                                 </div>
@@ -173,96 +182,10 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
     <script src="../../Assets/js/jquery-1.10.2.min.js"></script>
     <script src="../../Assets/js/bootstrap.min.js"></script>
     <script src="../../Assets/js/all.js"></script>
+    <script src="../../Assets/js/task.js"></script>
 
     <script type="text/javascript">
-    function show_edit_option(id) {
-        $(".task_item_" + id).hide();
-        $(".task_edit_" + id).show();
-        $("#task_input_" + id).focus();
 
-    }
-
-    function completeThisTask(id) {
-        var oForm = $("#taskDeleteForm_" + id);
-        oForm.action = "delete.php";
-        oForm.post = "post";
-        oForm.submit();
-        // console.log(id);
-
-    }
-
-    function updateThisTask(formId) {
-        var oForm = $("#taskEditForm_" + formId);
-        oForm.action = "update.php";
-        oForm.post = "post";
-        oForm.submit();
-    }
-
-    function filterTasks(option) {
-        console.log(option);
-        $.post("filter.php", {
-            option: option
-        }, function(result) {
-            // $("span").html(result);
-            console.log(result);
-            location.reload();
-
-        });
-    }
-
-    function deleteCompleted() {
-        var option = '<?=$selectedoption?>';
-        // console.log(option);
-        $.post("clear.php", {
-            option: option
-        }, function(result) {
-            // $("span").html(result);
-            // console.log(result);
-        });
-        location.reload();
-    }
-
-    $(function() {
-        $("span").each(function(index) {
-            var spanId = $(this).attr('id');
-            var span = $(this);
-            var spanWidth = span.width();
-            var fontSize = parseInt(span.css('font-size'));
-            // console.log(spanId, spanWidth, fontSize);
-            while (spanWidth > 450) {
-
-                fontSize--;
-                span.css('font-size', fontSize.toString() + 'px');
-                spanWidth = span.width();
-                fontSize = parseInt(span.css('font-size'));
-                // console.log(spanId, spanWidth, fontSize);
-
-            }
-        });
-
-    });
-
-    $(document).ready(function() {
-        $(".add-task").val('');
-        $(".add-task").keypress(function(e) {
-            if ((e.which == 13) && (!$(this).val().length == 0)) {
-                var oForm = $("#taskInputForm");
-                oForm.action = "store.php";
-                oForm.post = "post";
-                oForm.submit();
-                // $(this).val('');
-            } else if (e.which == 13) {
-                // alert('Please enter new task');
-            }
-        });
-        $(".taskEditInput").on('blur', function(e) {
-            var dataId = $(this).attr("data-id");
-            var oForm = $("#taskEditForm_" + dataId);
-            oForm.action = "update.php";
-            oForm.post = "post";
-            oForm.submit();
-        });
-    });
     </script>
 </body>
 

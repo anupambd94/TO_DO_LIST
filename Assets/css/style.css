@@ -279,6 +279,7 @@ input {
 }
 .icon {
   color: rgba(4, 105, 34, 0.26);
+  font-weight: 100;
   font-size: 10px;
   size: 10px;
 }
@@ -322,6 +323,25 @@ label.nav-link {
   text-indent: 1.5em;
   min-width: calc(1em + 2px);
   cursor: default;
+}
+
+/* span.someicon {
+  display: none;
+}
+span.hidden-resizer:hover \ span.someicon {
+  display: inline-block;
+} */
+.remove-icon {
+  position: fixed;
+  display: inline-block;
+  margin-left: 19.5em;
+  white-space: nowrap;
+  line-height: 1;
+}
+span.delete {
+  display: none;
+  font-size: 17px;
+  color: rgba(211, 66, 40, 0.644);
 }
 
 .pretty.p-icon .state .icon {
@@ -472,6 +492,15 @@ a.nav-link.selected {
 .completed_button:hover {
   text-decoration: underline;
   cursor: help;
+}
+
+span.completed {
+  color: rgba(204, 204, 204, 0.425);
+  pointer-events: none;
+  text-decoration-line: line-through;
+  display: inline-block;
+  font-size: 26px;
+  cursor: not-allowed;
 }
 /* .todo-list:hover {
   cursor: pointer;
