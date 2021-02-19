@@ -70,8 +70,7 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                     <div class="card-body">
                         <form id="taskInputForm" action="store.php" method="post">
                             <div class="inputField">
-                                <?php if ($totalActive > 0): ?>
-
+                                <?php if ($totalActive > 0 || $totalCompleted > 0): ?>
                                 <i class="fas fa-chevron-down" style="color:rgba(204, 204, 204, 0.466);"></i>
                                 <?php endif;?>
                                 <input type="text" name="name" class="no-outline add-task element" autocomplete="off"
@@ -90,16 +89,18 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                             <div class="task_item task_item_<?=$task['id']?>">
                                 <div class=" innerPosition">
                                     <div class="pretty p-icon p-round">
-                                        <input type="checkbox" class="checkbox" title="Check if this task is completed"
+                                        <input type="checkbox" class="checkbox"
+                                            title="<?=($task['is_completed'] == '1') ? 'Already completed' : 'Check if this task is completed'?>"
                                             <?=($task['is_completed'] == '1' && $task['status'] == '3') ? 'checked' : ''?>
                                             onclick="completeThisTask('<?=$task['id']?>')" />
                                         <div class="state">
                                             <i class="icon fas fa-check"></i>
                                             <!-- <i class="fas fa-check"></i> -->
-                                            <label title="Edit"
+                                            <label title="Edit this task" style=""
                                                 <?=($task['is_completed'] != '1' && $task['status'] != '3') ? 'onclick="show_edit_option(' . $task['id'] . ')"' : '';?>
                                                 <?=($task['is_completed'] == '1' && $task['status'] == '3') ? 'style="color: #ccc;pointer-events: none;-webkit-text-decoration-line: line-through;text-decoration-line: line-through;"' : ''?>>
-                                                <?=$task['task_name']?>
+                                                <span class="hidden-resizer" id="taskName_<?=$task['id']?>"
+                                                    style="display: inline-block;font-size: 26px;"><?=$task['task_name']?></span>
                                             </label>
                                         </div>
                                     </div>
@@ -154,7 +155,8 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                                     <?php if ($totalCompleted > 0): ?>
                                     <li role="presentation" class="nav-item all-task">
                                         <label for="itemsleft" class="nav-link completed_button"
-                                            onclick="deleteCompleted()">Clear Completed</label>
+                                            title="Delete all completed tasks" onclick="deleteCompleted()">Clear
+                                            Completed</label>
 
                                     </li>
                                     <?php endif;?>
@@ -219,6 +221,26 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
         });
         location.reload();
     }
+
+    $(function() {
+        $("span").each(function(index) {
+            var spanId = $(this).attr('id');
+            var span = $(this);
+            var spanWidth = span.width();
+            var fontSize = parseInt(span.css('font-size'));
+            // console.log(spanId, spanWidth, fontSize);
+            while (spanWidth > 450) {
+
+                fontSize--;
+                span.css('font-size', fontSize.toString() + 'px');
+                spanWidth = span.width();
+                fontSize = parseInt(span.css('font-size'));
+                // console.log(spanId, spanWidth, fontSize);
+
+            }
+        });
+
+    });
 
     $(document).ready(function() {
         $(".add-task").val('');

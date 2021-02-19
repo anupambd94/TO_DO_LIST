@@ -5,6 +5,14 @@ use mysqli;
 
 class Task
 {
+    // variables for databse connection
+    public $dbhost = 'localhost';
+    public $dbname = 'test';
+    public $dbuser = 'root';
+    public $dbpassword = '';
+    public $dbtable = 'to_do_list';
+// -------------------------------------------
+    public $connection = "";
     public $data = "";
     public $totalCompleted = "";
     public $totalActive = "";
@@ -15,30 +23,13 @@ class Task
     public function __construct()
     {
         session_start();
-        $mysqli = new mysqli("localhost", "root", "", "test");
+        $mysqli = new mysqli($this->dbhost, $this->dbuser, $this->dbpassword, $this->dbname);
         if ($mysqli->connect_errno) {
-            echo "Failed to connect to MySQL: " . $mysqli->connect_error;
-            exit();
+            $message = "Error: <br>" . $mysqli->connect_errno;
+            $_SESSION['msg'] = '<font color="red">' . $message . '</font>';
+            header("location: index.php");
         }
-
-        // Return name of current default database
-        if ($result = $mysqli->query("SELECT DATABASE()")) {
-            $row = $result->fetch_row();
-            // echo "Default database is " . $row[0];
-            $result->close();
-        }
-
-        // Change db to "test" db
-        $mysqli->select_db("test");
-
-        // Return name of current default database
-        if ($result = $mysqli->query("SELECT DATABASE()")) {
-            $row = $result->fetch_row();
-            // echo "Default database is " . $row[0];
-            $result->close();
-        }
-
-        $mysqli->close();
+        $this->connection = $mysqli;
     }
 
     public function prepare($data = '')
@@ -66,11 +57,10 @@ class Task
 
     public function store()
     {
-        $mysqli = new mysqli("localhost", "root", "", "test");
+        $mysqli = $this->connection;
         if (isset($this->name) && !empty($this->name)) {
-            $sql = "INSERT INTO `to_do_list` (`task_name`,`status`) VALUES ('$this->name','$this->status')";
+            $sql = "INSERT INTO `$this->dbtable` (`task_name`,`status`) VALUES ('$this->name','$this->status')";
             if ($mysqli->query($sql) === true) {
-                // $_SESSION['msg'] = '<font color="green">' . "Successfully Added.." . '</font>';
                 $this->index();
                 header("location: index.php");
             } else {
@@ -85,10 +75,9 @@ class Task
 
     public function index()
     {
+        $mysqli = $this->connection;
         $option = $this->option;
         $_SESSION['option'] = $option;
-
-        $mysqli = new mysqli("localhost", "root", "", "test");
 
         $condition = "";
         if ($option == 'active') {
@@ -99,7 +88,7 @@ class Task
             $condition = "";
         }
 
-        $sql = "SELECT * FROM `to_do_list` $condition";
+        $sql = "SELECT * FROM `$this->dbtable` $condition";
         $result = $mysqli->query($sql);
 
         if ($result->num_rows > 0) {
@@ -124,8 +113,8 @@ class Task
 
     public function getTotalCompleted()
     {
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "SELECT COUNT(*) AS Total FROM `to_do_list` WHERE `is_completed` = 1 ";
+        $mysqli = $this->connection;
+        $sql = "SELECT COUNT(*) AS Total FROM `$this->dbtable` WHERE `is_completed` = 1 ";
         $result = $mysqli->query($sql);
 
         if ($result->num_rows > 0) {
@@ -142,8 +131,8 @@ class Task
     }
     public function getTotalActive()
     {
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "SELECT COUNT(*) AS Total FROM `to_do_list` WHERE `status` = 1 ";
+        $mysqli = $this->connection;
+        $sql = "SELECT COUNT(*) AS Total FROM `$this->dbtable` WHERE `status` = 1 ";
         $result = $mysqli->query($sql);
 
         if ($result->num_rows > 0) {
@@ -161,8 +150,8 @@ class Task
 
     public function show()
     {
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "SELECT * FROM `to_do_list` WHERE `id` = '$this->id'";
+        $mysqli = $this->connection;
+        $sql = "SELECT * FROM `$this->dbtable` WHERE `id` = '$this->id'";
         $result = $mysqli->query($sql);
 
         if ($result->num_rows > 0) {
@@ -179,15 +168,10 @@ class Task
     }
     public function update()
     {
-        // echo $this->id;
-        // echo $this->name;
-        // echo $this->status;
-        // echo 'this is update page';
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "UPDATE `to_do_list` SET `task_name` = '$this->name', `status`  = '$this->status' WHERE id = '$this->id'";
+        $mysqli = $this->connection;
+        $sql = "UPDATE `$this->dbtable` SET `task_name` = '$this->name', `status`  = '$this->status' WHERE id = '$this->id'";
 
         if ($mysqli->query($sql) === true) {
-            // $_SESSION['msg'] = '<font color="green">' . "Successfully Updated.." . '</font>';
             $this->index();
             header("location: index.php");
         } else {
@@ -200,15 +184,10 @@ class Task
     }
     public function complete_task()
     {
-        // echo $this->id;
-        // echo $this->name;
-        // echo $this->status;
-        // echo 'this is update page';
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "UPDATE `to_do_list` SET `is_completed` = 1, `status`  = '$this->status' WHERE id = '$this->id'";
+        $mysqli = $this->connection;
+        $sql = "UPDATE `$this->dbtable` SET `is_completed` = 1, `status`  = '$this->status' WHERE id = '$this->id'";
 
         if ($mysqli->query($sql) === true) {
-            // $_SESSION['msg'] = '<font color="green">' . "Successfully Updated.." . '</font>';
             $this->index();
             header("location: index.php");
         } else {
@@ -221,11 +200,10 @@ class Task
     }
     public function delete()
     {
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "DELETE FROM `to_do_list` WHERE id = '$this->id'";
+        $mysqli = $this->connection;
+        $sql = "DELETE FROM `$this->dbtable` WHERE id = '$this->id'";
 
         if ($mysqli->query($sql) === true) {
-            // $_SESSION['msg'] = '<font color="green">' . "Successfully Deleted.." . '</font>';
             header("location: index.php");
         } else {
             $message = "Error: " . $sql . "<br>" . $mysqli->error;
@@ -239,8 +217,8 @@ class Task
     public function clear_completed()
     {
 
-        $mysqli = new mysqli("localhost", "root", "", "test");
-        $sql = "DELETE FROM `to_do_list` WHERE `is_completed` = 1";
+        $mysqli = $this->connection;
+        $sql = "DELETE FROM `$this->dbtable` WHERE `is_completed` = 1";
 
         if ($mysqli->query($sql) === true) {
             $this->index();
