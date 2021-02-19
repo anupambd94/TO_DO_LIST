@@ -43,6 +43,9 @@ class Task
         if (array_key_exists('id', $data) && !empty($data['id'])) {
             $this->id = $data['id'];
         }
+        if (array_key_exists('option', $data)) {
+            $this->option = $data['option'];
+        }
         // print_r($data);
         return $this;
     }
@@ -185,6 +188,9 @@ class Task
     public function complete_task()
     {
         $mysqli = $this->connection;
+        $option = $this->option;
+        echo $option;
+        $_SESSION['option'] = $option;
         $sql = "UPDATE `$this->dbtable` SET `is_completed` = 1, `status`  = '$this->status' WHERE id = '$this->id'";
 
         if ($mysqli->query($sql) === true) {
@@ -201,6 +207,8 @@ class Task
     public function delete()
     {
         $mysqli = $this->connection;
+        $option = $this->option;
+        $_SESSION['option'] = $option;
         $sql = "DELETE FROM `$this->dbtable` WHERE id = '$this->id'";
 
         if ($mysqli->query($sql) === true) {

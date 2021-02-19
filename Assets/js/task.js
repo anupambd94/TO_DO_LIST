@@ -24,7 +24,7 @@ function updateThisTask(formId) {
     oForm.submit();
 }
 
-function filterTasks(option) {
+function filterTasks(option) { 
     // console.log(option);
     $.post("filter.php", {
         option: option
@@ -37,15 +37,16 @@ function filterTasks(option) {
 }
 
 function deleteCompleted() {
-    var option = '<?=$selectedoption?>';
-    // console.log(option);
-    $.post("clear.php", {
-        option: option
-    }, function(result) {
-        // $("span").html(result);
-        // console.log(result);
-    });
-    location.reload();
+    var option = '<?php $selectedoption ?>';
+    console.log(option);
+    // $.post("clear.php", {
+    //     option: option
+    // }, function(result) {
+    //     // $("span").html(result);
+    //     // console.log(result);
+   // location.reload();
+
+    // });
 }
 
 $(function() {
@@ -88,8 +89,12 @@ $(function() {
 });
 
 $(document).ready(function() {
+    var option = '<?=$selectedoption?>';
+    console.log('selected: '+option);
     $(".add-task").val('');
-    $("#addTaskInputFiled").focus();
+    if(option != 'completed'){
+        $("#addTaskInputFiled").focus();
+    }
     $(".add-task").keypress(function(e) {
         if ((e.which == 13) && (!$(this).val().length == 0)) {
             var oForm = $("#taskInputForm");
