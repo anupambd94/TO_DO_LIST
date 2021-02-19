@@ -1,7 +1,10 @@
 function show_edit_option(id) {
     $(".task_item_" + id).hide();
     $(".task_edit_" + id).show();
-    $("#task_input_" + id).focus();
+    var input = $("#task_input_" + id);
+    input.focus();
+input[0].selectionStart = input[0].selectionEnd = input.val().length;
+input.css('border-color', '#a7a4a4');
 
 }
 
@@ -22,12 +25,12 @@ function updateThisTask(formId) {
 }
 
 function filterTasks(option) {
-    console.log(option);
+    // console.log(option);
     $.post("filter.php", {
         option: option
     }, function(result) {
         // $("span").html(result);
-        console.log(result);
+        // console.log(result);
         location.reload();
 
     });
@@ -86,6 +89,7 @@ $(function() {
 
 $(document).ready(function() {
     $(".add-task").val('');
+    $("#addTaskInputFiled").focus();
     $(".add-task").keypress(function(e) {
         if ((e.which == 13) && (!$(this).val().length == 0)) {
             var oForm = $("#taskInputForm");

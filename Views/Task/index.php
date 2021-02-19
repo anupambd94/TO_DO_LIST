@@ -71,7 +71,8 @@ if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
                                 <?php if ($totalActive > 0 || $totalCompleted > 0): ?>
                                 <i class="fas fa-chevron-down" style="color:rgba(204, 204, 204, 0.466);"></i>
                                 <?php endif;?>
-                                <input type="text" name="name" class="no-outline add-task element" autocomplete="off"
+                                <input type="text" name="name" id="addTaskInputFiled"
+                                    class="no-outline add-task element" autocomplete="off"
                                     placeholder="What need to be done?">
 
                                 <input class="insert" type="hidden" name="status" value="1">

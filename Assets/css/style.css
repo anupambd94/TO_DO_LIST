@@ -370,8 +370,15 @@ span.delete {
 .task_edit {
   margin-left: 45px;
 }
+.task_edit:hover {
+  cursor: alias;
+}
 .button_elementes {
   height: 10px;
+}
+
+.taskEditInput {
+  border-color: #a7a4a4;
 }
 
 a.nav-link {
@@ -397,6 +404,7 @@ a.nav-link:hover {
   border-color: #a7a4a4;
   border-radius: 0.25rem;
   cursor: pointer;
+  box-shadow: 0 2px #999;
 
   /* Gradient background for bttons */
   background: rgba(255, 255, 255, 1);
@@ -438,6 +446,10 @@ a.nav-link:hover {
     rgba(237, 237, 237, 1) 100%
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=1 );
+}
+a.nav-link:active {
+  box-shadow: 0 1px #666;
+  transform: translateY(4px);
 }
 a.nav-link.selected {
   color: #a7a4a4;
